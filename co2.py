@@ -28,16 +28,10 @@ daysSinceStart=timeElapsed.dt.days
 #x variable is daysSinceStart
 
 coeffs = np.polyfit(daysSinceStart, dfCarbonDioxide['value'], 2)
-#popt, pcov = curve_fit(lineFit, daysSinceStart, dfCarbonDioxide['value']))
 predicted = plyFunc(daysSinceStart, coeffs[2], coeffs[1], coeffs[0])
 
 fig, axResidual = plt.subplots()
 axResidual.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value']-predicted,'ok')
 
-
-
 periodHolder = 365.25
-
-
-
 
