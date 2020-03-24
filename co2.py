@@ -36,7 +36,9 @@ boolMissing=dfCarbonDioxide['value']==-999.99
 dfCarbonDioxide[boolMissing]=np.nan
 dfCarbonDioxide=dfCarbonDioxide.dropna()
 dfCarbonDioxide=dfCarbonDioxide.reset_index(drop=True)
+'''
 print(dfCarbonDioxide)
+'''
 '''
 fig, ax = plt.subplots(figsize=(12,8))
 ax.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value'],'ok')
@@ -94,37 +96,56 @@ thirdResiduals = predictionSecond - dfCarbonDioxide['value']
 axResidual.plot(dfCarbonDioxide['date'],thirdResiduals,'ok')
 '''
 
-predictionSecond2 = fitFunc (daysSinceStart, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5])
-fig, axPredictions2 = plt.subplots()
-axPredictions2.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value'], 'bo')
-axPredictions2.plot(dfCarbonDioxide['date'],predictionSecond2,'ok')
-axPredictions2.set_ylabel('Carbon Dioxide')
-axPredictions2.set_xlabel('Date')
+predictions = fitFunc (daysSinceStart, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5])
+fig, axPred = plt.subplots()
+axPred.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value'], 'bo')
+axPred.plot(dfCarbonDioxide['date'],predictions,'ok')
+axPred.set_ylabel('Carbon Dioxide')
+axPred.set_xlabel('Date')
 
-fig, axResidual2 = plt.subplots()
-secondResiduals2 = predictionSecond2 - dfCarbonDioxide['value']
-axResidual2.plot(dfCarbonDioxide['date'],secondResiduals2,'ok')
+fig, axRes = plt.subplots()
+Res = predictions - dfCarbonDioxide['value']
+axRes.plot(dfCarbonDioxide['date'],Res,'ok')
 
-Sum1 = np.sum(secondResiduals2**2)
+  
+Sum1 = np.sum(Res**2)
 Sum2 = Sum1/(daysSinceStart.max()-2)
 SE = np.sqrt(Sum2)
 #Standard Error of all points and not of just 2018 points
+
+daysFuture = np.linspace(1,np.max(daysSinceStart) + 365*2,np.max(daysSinceStart) + 365*2)
+
+days = pd.to_timedelta(daysFuture, unit='d')
+
+pred2 = days+startDate
+
+    
+predExt = fitFunc (daysFuture, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5])
+fig, axPredExt = plt.subplots()
+axPredExt.plot(pred2,predExt, 'ok')
+
+#Step 6: 
 
 holdyear= daysSinceStart.max()-365   
 popt1, pcov1 =curve_fit(fitFunc, holdyear, dfCarbonDioxide['value'], p0=[amplitude, periodHolder, offset, coeffs[2], coeffs[1], coeffs[0]])
-       
-predictionTest = fitFunc (daysSinceStart, popt1[0], popt1[1], popt1[2], popt1[3], popt1[4], popt1[5]) 
-fig, axPredictions3 = plt.subplots()
-axPredictions3.plot(dfCarbonDioxide['date'],predictionTest, 'bo')
 
+predTest = fitFunc (daysSinceStart, popt1[0], popt1[1], popt1[2], popt1[3], popt1[4], popt1[5]) 
+fig, axPredTest = plt.subplots()
+axPredTest.plot(dfCarbonDioxide['date'],predTest, 'ok')
+axPredTest.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value'], 'bo')
 #axPredictions2.text(1,1, popt[3] + ' + ' + popt[4] + ' * Time + ' + popt[5] + ' * Time^{2} + ' + popt[0] + '/2 + cos(Time/' + popt[1] + ') * 2(pi)/' + popt[2], ha='left', va='center')
 
-Sum1 = np.sum(secondResiduals2**2)
-Sum2 = Sum1/(daysSinceStart.max()-2)
-SE = np.sqrt(Sum2)
-#Standard Error of all points and not of just 2018 points
 
 '''
+day = pd.Timedelta(1, unit='d')
+
+futDays = day * daysFuture
+
+futDate = pd.to_datetime(futDays)
+'''
+
+'''
+
 testDates =  np.linspace(1,20000,20000)
 predictionTest = fitFunc (testDates, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5]) 
 fig, axPredictions3 = plt.subplots()
@@ -133,8 +154,8 @@ axPredictions3.plot(testDates,predictionTest, 'bo')
 
 Holder=np.linspace(1,1000,1000)
 Holder2 = pd.Timedelta(days=Holder)
-'''
 
+'''
 
 
 
