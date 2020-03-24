@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from scipy.optimize import curve_fit
+from ftplib import FTP
 
 def oscFunc(x, amp, period, offset):  
     return amp/2 * np.cos((x + offset)  * 2 * np.pi/period) 
@@ -13,7 +14,23 @@ def plyFunc(x, c0, c1, c2):
 def fitFunc(x, amp, period, offset, c0, c1, c2):
     return plyFunc(x, c0, c1, c2) + oscFunc (x, amp, period, offset)
 
-dfCarbonDioxide=pd.read_table('co2_mlo.txt',delimiter=r"\s+",skiprows=146)
+ftp = FTP('ftp.cmdl.noaa.gov') 
+ftp.login()
+ftp.cwd('/data/trace_gases/co2/in-situ/surface/mlo/')
+
+
+filename = 'co2_mlo_surface-insitu_1_ccgg_DailyData.txt'
+
+localfile = open(filename, 'wb')
+ftp.retrbinary('RETR ' + filename, localfile.write, 1024)
+
+ftp.quit()
+localfile.close()
+
+#dfCarbonDioxideTest=pd.read_table(grabFile,delimiter=r"\s+",skiprows=146)
+
+
+dfCarbonDioxide=pd.read_table(filename,delimiter=r"\s+",skiprows=146)
 dfCarbonDioxide['date']=pd.to_datetime(dfCarbonDioxide[['year', 'month', 'day', 'hour', 'minute', 'second']])
 boolMissing=dfCarbonDioxide['value']==-999.99
 dfCarbonDioxide[boolMissing]=np.nan
@@ -99,6 +116,8 @@ popt1, pcov1 =curve_fit(fitFunc, holdyear, dfCarbonDioxide['value'], p0=[amplitu
 predictionTest = fitFunc (daysSinceStart, popt1[0], popt1[1], popt1[2], popt1[3], popt1[4], popt1[5]) 
 fig, axPredictions3 = plt.subplots()
 axPredictions3.plot(dfCarbonDioxide['date'],predictionTest, 'bo')
+
+#axPredictions2.text(1,1, popt[3] + ' + ' + popt[4] + ' * Time + ' + popt[5] + ' * Time^{2} + ' + popt[0] + '/2 + cos(Time/' + popt[1] + ') * 2(pi)/' + popt[2], ha='left', va='center')
 
 Sum1 = np.sum(secondResiduals2**2)
 Sum2 = Sum1/(daysSinceStart.max()-2)
