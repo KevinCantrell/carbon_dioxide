@@ -14,15 +14,24 @@ def plyFunc(x, c0, c1, c2):
 def fitFunc(x, amp, period, offset, c0, c1, c2):
     return plyFunc(x, c0, c1, c2) + oscFunc (x, amp, period, offset)
 
+def FormatSciUsingError(x,e,WithError=False,ExtraDigit=0):
+  if abs(x)>=e:
+      NonZeroErrorX=np.floor(np.log10(abs(e)))
+      NonZeroX=np.floor(np.log10(abs(x)))
+      formatCodeX="{0:."+str(int(NonZeroX-NonZeroErrorX+ExtraDigit))+"E}"
+      formatCodeE="{0:."+str(ExtraDigit)+"E}"
+  else:
+      formatCodeX="{0:."+str(ExtraDigit)+"E}"
+      formatCodeE="{0:."+str(ExtraDigit)+"E}"
+  if WithError==True:
+      return formatCodeX.format(x)+" (+/- "+formatCodeE.format(e)+")"
+  else:
+      return formatCodeX.format(x)
+
 def AnnotateFit(fit,axisHandle,annotationText='Eq',color='black',Arrow=False,xArrow='Middle',yArrow=0,xText=0.5,yText=0.2):    
-  #c=fit['coefs']
-  #e=fit['errors']
-  #t=len(c)
   if annotationText=='Eq':
-      #annotationText="[$CO_2$] = "+FormatSciUsingError(poptt[3],errors[0],WithError=False)+'+ '+FormatSciUsingError(poptt[4],errors[0],WithError=False)+"x + " +FormatSciUsingError(poptt[5],errors[0],WithError=False)+"x$^{2}$ + "+FormatSciUsingError(poptt[0],errorAMP,WithError=False)+"*  "+r'$\mathrm{cos}$((x+'+FormatSciUsingError(poptt[2],errors[0],WithError=False)+r')*$\frac{2\pi}{365.08}$)'+'\n'
       annotationText="[$CO_2$] = "+FormatSciUsingError(poptt[3],errors[0],WithError=False)+'+ '+FormatSciUsingError(poptt[4],errors[0],WithError=False)+"x + " +FormatSciUsingError(poptt[5],errors[0],WithError=False)+"x$^{2}$ + "+r'($\frac{5.91}{2}$)'+"*  "+r'$\mathrm{cos}$((x+'+FormatSciUsingError(poptt[2],errors[0],WithError=False)+r')*$\frac{2\pi}{365.08}$)'+'\n'
       annotationText=annotationText+"where x is the datetime"
-      #annotationText=annotationText+", sy={0:.1E}".format(fit['sy'])
   elif annotationText=='Box':
       annotationText="Fit Details:\n"
       annotationText=annotationText+"C$_0$ = "+FormatSciUsingError(poptt[3],errors[0],WithError=False)+", C$_1$ = "+FormatSciUsingError(poptt[4],errors[0],WithError=False)+", C$_2$ = "+FormatSciUsingError(poptt[5],errors[0],WithError=False)+'\n'
@@ -30,7 +39,6 @@ def AnnotateFit(fit,axisHandle,annotationText='Eq',color='black',Arrow=False,xAr
       annotationText=annotationText+"syFIT = "+FormatSciUsingError(syerror, errors[0],WithError=False)+' ppm' +'\n'
       annotationText=annotationText+"syerrorAMP="+FormatSciUsingError(errorAMP,errors[0],WithError=False)+", syerrorPERIOD=" +FormatSciUsingError(errorPERIOD,errors[0],WithError=False)+", syerrorOFFSET=" +FormatSciUsingError(errorOFFSET,errors[0],WithError=False)+ '\n'
       annotationText=annotationText+"syerrorC$_0$="+FormatSciUsingError(errorC0,errors[0],WithError=False)+", syerrorC$_1$ =" +FormatSciUsingError(errorC1,errors[0],WithError=False)+", syerrorC$_2$ =" +FormatSciUsingError(errorC2,errors[0],WithError=False)+ '\n'
-      #annotationText=annotationText+'n = {0:d}'.format(fit['n'])+', DoF = {0:d}'.format(fit['n']-t)+", s$_y$ = {0:.1E}".format(fit['sy'])
       annotationText=annotationText+"syerror Validation Set = "+FormatSciUsingError(syerrorValid, errors[0],WithError=False)+ 'ppm' 
      
   if (Arrow==True):
@@ -59,19 +67,6 @@ def AnnotateFit(fit,axisHandle,annotationText='Eq',color='black',Arrow=False,xAr
   annotationObject.draggable()
   return annotationObject
 
-def FormatSciUsingError(x,e,WithError=False,ExtraDigit=0):
-  if abs(x)>=e:
-      NonZeroErrorX=np.floor(np.log10(abs(e)))
-      NonZeroX=np.floor(np.log10(abs(x)))
-      formatCodeX="{0:."+str(int(NonZeroX-NonZeroErrorX+ExtraDigit))+"E}"
-      formatCodeE="{0:."+str(ExtraDigit)+"E}"
-  else:
-      formatCodeX="{0:."+str(ExtraDigit)+"E}"
-      formatCodeE="{0:."+str(ExtraDigit)+"E}"
-  if WithError==True:
-      return formatCodeX.format(x)+" (+/- "+formatCodeE.format(e)+")"
-  else:
-      return formatCodeX.format(x)
 
 
 ftp = FTP('ftp.cmdl.noaa.gov') 
@@ -159,10 +154,8 @@ predictedMay3=fitFunc(dateMay3,popt[0],popt[1],popt[2],popt[3],popt[4],popt[5])
 errorMay3=np.sqrt(np.diag(pcov))
 ErrorMay3 = errorMay3[0]
 
-#fitFunc={'coefs':popt,'errors':fitErrors,'sy':stdErrorFit,'n':len(predictions),'res':Residual,'labels':['amp','per','off','int','lin','exp','day=days since '+startDate.strftime('%b-%d-%Y')+'\n']}
+annGrad=AnnotateFit(predExt,axPredExt,annotationText=r'Concentration of $CO_2$ (ppm) on 05-03-2020 = '+FormatSciUsingError(predictedMay3,ErrorMay3,ExtraDigit=0)+' ppm',Arrow=True,xArrow=daysFuture[16788],yArrow=predictedMay3,xText=0.35,yText=0.95)
 
-#annGrad=AnnotateNLFit(fit,PredExt,color='purple',annotationText=r'Predicted CO$_2$ on '+dateToPredict.strftime('%b-%d-%Y')+" is "+FormatSciUsingError(valuePrediction,stdErrorFit,ExtraDigit=0)+" ppm",Arrow=True,xArrow=dateToPredict,yArrow=valuePrediction,xText=0.35,yText=0.95)
-annGrad=AnnotateFit(predExt,axPredExt,annotationText='Concentration of $CO_2$ (ppm) on 5/3/2020 = '+FormatSciUsingError(predictedMay3,ErrorMay3,WithError=False,ExtraDigit=0)+' ppm',color='red',Arrow=True,xArrow=axPredExt[16788],yArrow=PredictedMay3,xText=0.5,yText=0.2)
 #annGrad=AnnotateNLFit(predExt,axPredExt,color='purple',annotationText=r'Predicted CO$_2$ on '+" is "+FormatSciUsingError(415,2,ExtraDigit=0)+" ppm",Arrow=True,xArrow=16788,yArrow=415,xText=0.35,yText=0.95)
 
 
