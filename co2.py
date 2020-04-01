@@ -156,11 +156,11 @@ def AnnotateFit(fit,axisHandle,annotationText='Eq',color='black',Arrow=False,xAr
       #annotationText=annotationText+", sy={0:.1E}".format(fit['sy'])
   elif annotationText=='Box':
       annotationText="Fit Details:\n"
-      annotationText=annotationText+"C$_0$ = "+FormatSciUsingError(poptt[3],errors[0],WithError=False)+", C$_1$ = "+FormatSciUsingError(poptt[4],errors[0],WithError=False)+", C$_2$ = "+FormatSciUsingError(poptt[5],errors[0],WithError=False)+'\n'
-      annotationText=annotationText+"amp = "+FormatSciUsingError(poptt[0],errors[0],WithError=False)+", period = "+FormatSciUsingError(poptt[1],errors[0],WithError=False)+", offset = "+FormatSciUsingError(poptt[2],errors[0],WithError=False)+'\n'
+      annotationText=annotationText+"C$_0$ = "+FormatSciUsingError(poptt[3],errors[3],WithError=True)+", C$_1$ = "+FormatSciUsingError(poptt[4],errors[4],WithError=True)+", C$_2$ = "+FormatSciUsingError(poptt[5],errors[5],WithError=True)+'\n'
+      annotationText=annotationText+"amp = "+FormatSciUsingError(poptt[0],errors[0],WithError=True)+", period = "+FormatSciUsingError(poptt[1],errors[1],WithError=True)+", offset = "+FormatSciUsingError(poptt[2],errors[2],WithError=True)+'\n'
       annotationText=annotationText+"syFIT = "+FormatSciUsingError(syerror, errors[0],WithError=False)+' ppm' +'\n'
-      annotationText=annotationText+"syerrorAMP="+FormatSciUsingError(errorAMP,errors[0],WithError=False)+", syerrorPERIOD=" +FormatSciUsingError(errorPERIOD,errors[0],WithError=False)+", syerrorOFFSET=" +FormatSciUsingError(errorOFFSET,errors[0],WithError=False)+ '\n'
-      annotationText=annotationText+"syerrorC$_0$="+FormatSciUsingError(errorC0,errors[0],WithError=False)+", syerrorC$_1$ =" +FormatSciUsingError(errorC1,errors[0],WithError=False)+", syerrorC$_2$ =" +FormatSciUsingError(errorC2,errors[0],WithError=False)+ '\n'
+      #annotationText=annotationText+"syerrorAMP="+FormatSciUsingError(errorAMP,errors[0],WithError=False)+", syerrorPERIOD=" +FormatSciUsingError(errorPERIOD,errors[0],WithError=False)+", syerrorOFFSET=" +FormatSciUsingError(errorOFFSET,errors[0],WithError=False)+ '\n'
+      #annotationText=annotationText+"syerrorC$_0$="+FormatSciUsingError(errorC0,errors[0],WithError=False)+", syerrorC$_1$ =" +FormatSciUsingError(errorC1,errors[0],WithError=False)+", syerrorC$_2$ =" +FormatSciUsingError(errorC2,errors[0],WithError=False)+ '\n'
       #annotationText=annotationText+'n = {0:d}'.format(fit['n'])+', DoF = {0:d}'.format(fit['n']-t)+", s$_y$ = {0:.1E}".format(fit['sy'])
       annotationText=annotationText+"syerror Validation Set = "+FormatSciUsingError(syerrorValid, errors[0],WithError=False)+ 'ppm' 
      
@@ -190,7 +190,7 @@ def AnnotateFit(fit,axisHandle,annotationText='Eq',color='black',Arrow=False,xAr
   annotationObject.draggable()
   return annotationObject
 
-def FormatSciUsingError(x,e,WithError=False,ExtraDigit=0):
+def FormatSciUsingError(x,e,WithError=False,ExtraDigit=1):
   if abs(x)>=e:
       NonZeroErrorX=np.floor(np.log10(abs(e)))
       NonZeroX=np.floor(np.log10(abs(x)))
@@ -200,7 +200,7 @@ def FormatSciUsingError(x,e,WithError=False,ExtraDigit=0):
       formatCodeX="{0:."+str(ExtraDigit)+"E}"
       formatCodeE="{0:."+str(ExtraDigit)+"E}"
   if WithError==True:
-      return formatCodeX.format(x)+" (+/- "+formatCodeE.format(e)+")"
+      return formatCodeX.format(x)+" $\pm$ "+formatCodeE.format(e)
   else:
       return formatCodeX.format(x)
 
@@ -239,11 +239,16 @@ ax7final.set_xlabel("Year")
 ax7final.set_ylabel("Concentration of $CO_2$ insitu at Mauna Loa (ppm)")
 ax7final.set_title('Determination of the Concentration of $CO_2$ at Mauna Loa Throughout Time')
 
-ann1=AnnotateFit(Co2predicted,ax7final,annotationText='Box',color='yellow',xText=0.025,yText=0.85)
+fig9,ax9=plt.subplots(figsize=(12,8))
+ax9.set_title('SCRIPT ALREADY PUSHED TO GITHUB!',color='red')
+ann4=AnnotateFit(5,ax9,annotationText='SCRIPT ALREADY PUSHED TO GITHUB!',color='red',xText=0.5,yText=0.50)
+
+
+ann1=AnnotateFit(Co2predicted,ax7final,annotationText='Box',color='yellow',xText=0.015,yText=0.85)
 
 ann2=AnnotateFit(Co2predicted,ax7final,annotationText='Concentration of $CO_2$ (ppm) on 5/3/2020 = '+FormatSciUsingError(Co2concMay3rd,Co2concerror,WithError=False,ExtraDigit=0)+' ppm',color='orange',Arrow=True,xArrow=newxaxis[16787],yArrow=Co2concMay3rd,xText=0.5,yText=0.2)
 
-ann3=AnnotateFit(Co2predicted,ax7final,annotationText='Eq',color='yellow',xText=0.025,yText=0.65)
+ann3=AnnotateFit(Co2predicted,ax7final,annotationText='Eq',color='yellow',xText=0.015,yText=0.70)
 
 with pd.ExcelWriter(r'C:\Users\eng20\Desktop\CO2MLORaw.xlsx') as writer:
     dfCarbonDioxide.to_excel(writer, sheet_name='RawData')
