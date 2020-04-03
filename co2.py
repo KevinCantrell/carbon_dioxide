@@ -30,16 +30,16 @@ def FormatSciUsingError(x,e,WithError=False,ExtraDigit=0):
 
 def AnnotateFit(fit,axisHandle,annotationText='Eq',color='black',Arrow=False,xArrow='Middle',yArrow=0,xText=0.5,yText=0.2):    
   if annotationText=='Eq':
-      annotationText="[$CO_2$] = "+FormatSciUsingError(poptt[3],errors[0],WithError=False)+'+ '+FormatSciUsingError(poptt[4],errors[0],WithError=False)+"x + " +FormatSciUsingError(poptt[5],errors[0],WithError=False)+"x$^{2}$ + "+r'($\frac{5.91}{2}$)'+"*  "+r'$\mathrm{cos}$((x+'+FormatSciUsingError(poptt[2],errors[0],WithError=False)+r')*$\frac{2\pi}{365.08}$)'+'\n'
+      annotationText="[$CO_2$] = "+FormatSciUsingError(popt[3],errors[0],WithError=False)+'+ '+FormatSciUsingError(popt[4],errors[0],WithError=False)+"x + " +FormatSciUsingError(popt[5],errors[0],WithError=False)+"x$^{2}$ + "+r'($\frac{5.91}{2}$)'+"*  "+r'$\mathrm{cos}$((x+'+FormatSciUsingError(popt[2],errors[0],WithError=False)+r')*$\frac{2\pi}{365.08}$)'+'\n'
       annotationText=annotationText+"where x is the datetime"
   elif annotationText=='Box':
       annotationText="Fit Details:\n"
-      annotationText=annotationText+"C$_0$ = "+FormatSciUsingError(poptt[3],errors[0],WithError=False)+", C$_1$ = "+FormatSciUsingError(poptt[4],errors[0],WithError=False)+", C$_2$ = "+FormatSciUsingError(poptt[5],errors[0],WithError=False)+'\n'
-      annotationText=annotationText+"amp = "+FormatSciUsingError(poptt[0],errors[0],WithError=False)+", period = "+FormatSciUsingError(poptt[1],errors[0],WithError=False)+", offset = "+FormatSciUsingError(poptt[2],errors[0],WithError=False)+'\n'
-      annotationText=annotationText+"syFIT = "+FormatSciUsingError(syerror, errors[0],WithError=False)+' ppm' +'\n'
+      annotationText=annotationText+"C$_0$ = "+FormatSciUsingError(popt[3],errors[0],WithError=False)+", C$_1$ = "+FormatSciUsingError(popt[4],errors[0],WithError=False)+", C$_2$ = "+FormatSciUsingError(popt[5],errors[0],WithError=False)+'\n'
+      annotationText=annotationText+"amp = "+FormatSciUsingError(popt[0],errors[0],WithError=False)+", period = "+FormatSciUsingError(popt[1],errors[0],WithError=False)+", offset = "+FormatSciUsingError(popt[2],errors[0],WithError=False)+'\n'
+      annotationText=annotationText+"syFIT = "+FormatSciUsingError(SE, errors[0],WithError=False)+' ppm' +'\n'
       annotationText=annotationText+"syerrorAMP="+FormatSciUsingError(errorAMP,errors[0],WithError=False)+", syerrorPERIOD=" +FormatSciUsingError(errorPERIOD,errors[0],WithError=False)+", syerrorOFFSET=" +FormatSciUsingError(errorOFFSET,errors[0],WithError=False)+ '\n'
       annotationText=annotationText+"syerrorC$_0$="+FormatSciUsingError(errorC0,errors[0],WithError=False)+", syerrorC$_1$ =" +FormatSciUsingError(errorC1,errors[0],WithError=False)+", syerrorC$_2$ =" +FormatSciUsingError(errorC2,errors[0],WithError=False)+ '\n'
-      annotationText=annotationText+"syerror Validation Set = "+FormatSciUsingError(syerrorValid, errors[0],WithError=False)+ 'ppm' 
+      annotationText=annotationText+"syerror Validation Set = "+FormatSciUsingError(SE2018, errors[0],WithError=False)+ 'ppm' 
      
   if (Arrow==True):
       if (xArrow=='Middle'):
@@ -109,9 +109,9 @@ popt, pcov =curve_fit(fitFunc, daysSinceStart, dfCarbonDioxide['value'], p0=[amp
 
 predictions = fitFunc (daysSinceStart, popt[0], popt[1], popt[2], popt[3], popt[4], popt[5])
 errors=np.sqrt(np.diag(pcov))
-errorAmp=errors[0]
-errorPeriod=errors[1]
-errorOffset=errors[2]
+errorAMP=errors[0]
+errorPERIOD=errors[1]
+errorOFFSET=errors[2]
 errorC0=errors[3]
 errorC1=errors[4]
 errorC2=errors[5]  
@@ -154,9 +154,7 @@ predictedMay3=fitFunc(dateMay3,popt[0],popt[1],popt[2],popt[3],popt[4],popt[5])
 errorMay3=np.sqrt(np.diag(pcov))
 ErrorMay3 = errorMay3[0]
 
-annGrad=AnnotateFit(predExt,axPredExt,annotationText=r'Concentration of $CO_2$ (ppm) on 05-03-2020 = '+FormatSciUsingError(predictedMay3,ErrorMay3,ExtraDigit=0)+' ppm',Arrow=True,xArrow=daysFuture[16788],yArrow=predictedMay3,xText=0.35,yText=0.95)
 
-#annGrad=AnnotateNLFit(predExt,axPredExt,color='purple',annotationText=r'Predicted CO$_2$ on '+" is "+FormatSciUsingError(415,2,ExtraDigit=0)+" ppm",Arrow=True,xArrow=16788,yArrow=415,xText=0.35,yText=0.95)
 
 
 boolDate = daysSinceStart < np.max(daysSinceStart-365)
@@ -176,5 +174,9 @@ Sum12018 = np.sum(Res2018**2)
 Sum22018 = Sum12018/(len(daysSinceStart[bool2018])-2)
 SE2018 = np.sqrt(Sum22018)
 
+#annGrad=AnnotateFit(predExt,axPredExt,annotationText=r'Concentration of $CO_2$ (ppm) on 05-03-2020 = '+FormatSciUsingError(predictedMay3,ErrorMay3,ExtraDigit=0)+' ppm',Arrow=True,xArrow=daysFuture[16788],yArrow=predictedMay3,xText=0.35,yText=0.95)
 
+annGrad=AnnotateFit(predExt,axPredExt,color='purple',annotationText=r'Predicted CO$_2$ on '+" is "+FormatSciUsingError(415,2,ExtraDigit=0)+" ppm",Arrow=True,xArrow=16788,yArrow=415,xText=0.35,yText=0.95)
 
+ann1=AnnotateFit(predExt,axPredExt,annotationText='Eq',color='red',xText=0.35,yText=0.95)
+ann2=AnnotateFit(predExt,axPredExt,annotationText='Box',color='red',xText=0.35,yText=0.95)
