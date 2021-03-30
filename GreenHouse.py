@@ -23,8 +23,9 @@ register_matplotlib_converters()
 def oscFunc(x, amp, period, offset):  
     return amp/2 * np.cos((x + offset)  * 2 * np.pi/period) 
 
-def plyFunc(x,c0,c1,c2):
-    return c0+x*c1+x**2*c2
+def FitPly(x,c0,c1,c2):
+    y=c0+(x*c1)+(x**2*c2)
+    return y
 
 #reading table
 dfCarbonDioxide=pd.read_table('co2_mlo.txt',delimiter=r"\s+",skiprows=151)
@@ -62,10 +63,9 @@ startDate=min(dfCarbonDioxide['date'])
 timeElapsed=dfCarbonDioxide['date']-startDate
 daysSinceStart=timeElapsed.dt.days
 
-coeffs=np.polyfit(daysSinceStart,dfCarbonDioxide['value'],2)
+#2nd order fitting of carbon dioxide relative to days elapsed
+fitCoeffs=np.polyfit(daysSinceStart,dfCarbonDioxide['value'],2)
 
-
-predicted=plyFunc(daysSinceStart,coeffs[2],coeffs[1],coeffs[0])
-
-fig,axResidual=plt.subplots()
-axResidual.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value']-predicted,'ok')
+#applies coefficients to x data
+fitCO2=FitPly(daysSinceStart,fitCoeffs[2],fitCoeffs[1],fitCoeffs[0])
+ax.plot(dfCarbonDioxide['date'],fitCO2,'-r')
