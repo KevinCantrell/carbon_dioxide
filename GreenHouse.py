@@ -26,6 +26,9 @@ def oscFunc(x, amp, period, offset):
 def FitPly(x,c0,c1,c2):
     y=c0+(x*c1)+(x**2*c2)
     return y
+def FitAll(x,c0,c1,c2, amp, period, offset):
+    y=c0+(x*c1)+(x**2*c2)+amp/2 * np.cos((x + offset)  * 2 * np.pi/period) 
+    return y
 
 #reading table
 dfCarbonDioxide=pd.read_table('co2_mlo.txt',delimiter=r"\s+",skiprows=151)
@@ -64,8 +67,31 @@ timeElapsed=dfCarbonDioxide['date']-startDate
 daysSinceStart=timeElapsed.dt.days
 
 #2nd order fitting of carbon dioxide relative to days elapsed
+#bettet than sciPi because it will give an exact answer rather than a search
 fitCoeffs=np.polyfit(daysSinceStart,dfCarbonDioxide['value'],2)
 
 #applies coefficients to x data
 fitCO2=FitPly(daysSinceStart,fitCoeffs[2],fitCoeffs[1],fitCoeffs[0])
 ax.plot(dfCarbonDioxide['date'],fitCO2,'-r')
+
+#resiual plotting
+fig,axResidual=plt.subplots()
+residuals=dfCarbonDioxide['value']-fitCO2
+axResidual.plot(daysSinceStart,residuals,'-b')
+#calculating standard error
+sy=np.sqrt(np.sum(residuals**2)/(len(residuals)-3))
+print(sy)
+
+osc=oscFunc(daysSinceStart,8,365.25,100)
+axResidual.plot(daysSinceStart,osc,'-r')
+
+allFit=FitAll(daysSinceStart,fitCoeffs[2],fitCoeffs[1],fitCoeffs[0],8,365.25,100)
+ax.plot(dfCarbonDioxide['date'],allFit,'-g')
+
+
+#applyinf scipy
+#coefs,cov=curve_fit(oscFunc,daysSinceStart,dfCarbonDioxide['value'])
+#sciPyCoeffs=coefs
+#print(fitCoeffs)
+#print(sciPyCoeffs)
+
