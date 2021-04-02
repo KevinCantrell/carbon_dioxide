@@ -26,6 +26,7 @@ def oscFunc(x, amp, period, offset):
 def FitPly(x,c0,c1,c2):
     y=c0+(x*c1)+(x**2*c2)
     return y
+
 def FitAll(x,c0,c1,c2, amp, period, offset):
     y=c0+(x*c1)+(x**2*c2)+amp/2 * np.cos((x + offset)  * 2 * np.pi/period) 
     return y
@@ -82,16 +83,21 @@ axResidual.plot(daysSinceStart,residuals,'-b')
 sy=np.sqrt(np.sum(residuals**2)/(len(residuals)-3))
 print(sy)
 
+#fitting oscillation to residuals
 osc=oscFunc(daysSinceStart,8,365.25,100)
 axResidual.plot(daysSinceStart,osc,'-r')
 
+#using allFit to fit total first time
 allFit=FitAll(daysSinceStart,fitCoeffs[2],fitCoeffs[1],fitCoeffs[0],8,365.25,100)
 ax.plot(dfCarbonDioxide['date'],allFit,'-g')
 
 
-#applyinf scipy
-#coefs,cov=curve_fit(oscFunc,daysSinceStart,dfCarbonDioxide['value'])
-#sciPyCoeffs=coefs
+#apply allFit with scipy
+coefs,cov=curve_fit(FitAll,daysSinceStart,dfCarbonDioxide['value'],p0=[fitCoeffs[2],fitCoeffs[1],fitCoeffs[0],8,365.25,100])
+sciPyCoeffs=coefs
+FinalOpt=FitAll(daysSinceStart,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
+ax.plot(dfCarbonDioxide['date'],FinalOpt,'-y')
 #print(fitCoeffs)
-#print(sciPyCoeffs)
+print(sciPyCoeffs)
+
 
