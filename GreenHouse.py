@@ -89,7 +89,6 @@ axResidual.plot(daysSinceStart,osc,'-r')
 
 #using allFit to fit total first time
 allFit=FitAll(daysSinceStart,fitCoeffs[2],fitCoeffs[1],fitCoeffs[0],8,365.25,100)
-ax.plot(dfCarbonDioxide['date'],allFit,'-g')
 
 
 #apply allFit with scipy
