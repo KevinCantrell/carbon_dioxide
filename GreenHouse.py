@@ -97,7 +97,7 @@ coefs,cov=curve_fit(FitAll,daysSinceStart,dfCarbonDioxide['value'],p0=[fitCoeffs
 sciPyCoeffs=coefs
 FinalOpt=FitAll(daysSinceStart,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
 ax.plot(dfCarbonDioxide['date'],FinalOpt,'-g')
-residualsOpt=dfCarbonDioxide['value']-FinalOpt
+residualsOpt=FinalOpt-dfCarbonDioxide['value']
 fig,axResidualOpt=plt.subplots()
 axResidualOpt.plot(daysSinceStart,residualsOpt,'-r')
 syOpt=np.sqrt(np.sum(residualsOpt**2)/(len(residualsOpt)-6))
@@ -111,14 +111,6 @@ timeElapsedUser=(userDateTime-startDate)
 daysPassedUser=timeElapsedUser.days
 predictedUserInput=FitAll(daysPassedUser,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
 print()
-print("The predicted CO2 for the date of "+ str(userDate)+" is "+str(round(predictedUserInput,2)+"ppmv")
-      
-      
-      
-      
-      
-      
-      
-      
-      
+print("The predicted CO2 for the date of "+ str(userDate)+" is "+str(round(predictedUserInput,2))+"ppmv")
+        
       
