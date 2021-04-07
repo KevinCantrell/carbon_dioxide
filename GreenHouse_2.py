@@ -111,14 +111,5 @@ timeElapsedUser=(userDateTime-startDate)
 daysPassedUser=timeElapsedUser.days
 predictedUserInput=FitAll(daysPassedUser,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
 print()
-print("The predicted CO2 for the date of "+ str(userDate)+" is "+str(round(predictedUserInput,2)+"ppmv")
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+print("The predicted CO2 for "+str(userDate)+"is "+str(round(predictedUserInput,2))+"ppmv")
+
