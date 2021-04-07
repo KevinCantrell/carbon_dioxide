@@ -17,6 +17,7 @@ from pandas.plotting import register_matplotlib_converters
 from scipy.optimize import curve_fit
 
 
+
 register_matplotlib_converters()
 
 #defining functions, given funtions
@@ -81,22 +82,52 @@ residuals=dfCarbonDioxide['value']-fitCO2
 axResidual.plot(daysSinceStart,residuals,'-b')
 #calculating standard error
 sy=np.sqrt(np.sum(residuals**2)/(len(residuals)-3))
-print(sy)
 
 #fitting oscillation to residuals
 osc=oscFunc(daysSinceStart,8,365.25,100)
 axResidual.plot(daysSinceStart,osc,'-r')
 
 #using allFit to fit total first time
-allFit=FitAll(daysSinceStart,fitCoeffs[2],fitCoeffs[1],fitCoeffs[0],8,365.25,100)
+#this has been mdified to get a good estimate for which scipy can start from
+allFit=FitAll(daysSinceStart,fitCoeffs[2],fitCoeffs[1],fitCoeffs[0],8,365.25,200)
 
 
 #apply allFit with scipy
-coefs,cov=curve_fit(FitAll,daysSinceStart,dfCarbonDioxide['value'],p0=[fitCoeffs[2],fitCoeffs[1],fitCoeffs[0],8,365.25,100])
+coefs,cov=curve_fit(FitAll,daysSinceStart,dfCarbonDioxide['value'],p0=[fitCoeffs[2],fitCoeffs[1],fitCoeffs[0],8,365.25,200])
 sciPyCoeffs=coefs
 FinalOpt=FitAll(daysSinceStart,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
-ax.plot(dfCarbonDioxide['date'],FinalOpt,'-y')
-#print(fitCoeffs)
-print(sciPyCoeffs)
+ax.plot(dfCarbonDioxide['date'],FinalOpt,'-g')
+residualsOpt=dfCarbonDioxide['value']-FinalOpt
+fig,axResidualOpt=plt.subplots()
+axResidualOpt.plot(daysSinceStart,residualsOpt,'-r')
+syOpt=np.sqrt(np.sum(residualsOpt**2)/(len(residualsOpt)-6))
+#print(syOpt)
 
 
+#peronal input for specific dates
+userDate=input("input date as YYYY-MM-DD:")
+userDateTime=pd.to_datetime(userDate)
+timeElapsedUser=(userDateTime-startDate)
+daysPassedUser=timeElapsedUser.days
+predictedUserInput=FitAll(daysPassedUser,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
+print()
+print("The predicted CO2 for the date of "+ str(userDate)+" is "+str(predictedUserInput)+"ppmv")
+
+
+
+#fitting to future dates
+lastDateofData=max(daysSinceStart)
+futureDateArray=np.linspace(lastDateofData+1,lastDateofData+365,365)
+predictedCO2=FitAll(futureDateArray,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
+ax.plot(futureDateArray,predictedCO2,'-b')
+
+#returning from days passed to dates
+datelist=[]
+for i in range(0,len(futureDateArray)):
+    day=futureDateArray[i]
+    date=pd.Timedelta(day,unit="d")
+    datelist.append(date)
+    
+    
+predictedDates=np.array(datelist)
+#print(predictedDates)
