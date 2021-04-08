@@ -167,8 +167,8 @@ lables=['amplitude','period','offset','initial','linear','exp','day = days since
 fitFitAll={'coefs':sciPyCoeffs,'errors':errors,'sy':syOpt,'n':len(FinalOpt),'res':residualsOpt,"labels":lables}
 
 #plot annotation
-AnnotateNLFit(fitFitAll,ax,xText=0.5,yText=0.25)
 plt.rc('font', size="18") 
+AnnotateNLFit(fitFitAll,ax,xText=0.5,yText=0.25)
 
 #creating prediction for up to 3 years from last data point
 maxDaysPassed=max(daysSinceStart)
@@ -189,13 +189,16 @@ TextTest="predicted CO2 for the date of "+ str(TestDate)+" is "+str(round(TestIn
 
 AnnotateNLFit(fitFitAll,ax,annotationText=TextTest,Arrow=True,xArrow=TestDateTime,yArrow=TestInput,xText=0.1,yText=0.9)
 #peronal input for specific dates
-userDate=input("input date for prediction as YYYY-MM-DD:")
-userDateTime=pd.to_datetime(userDate)
-timeElapsedUser=(userDateTime-startDate)
-daysPassedUser=timeElapsedUser.days
-predictedUserInput=FitAll(daysPassedUser,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
-print()
-print("The predicted CO2 for the date of "+ str(userDate)+" is "+str(round(predictedUserInput,2))+"ppmv")
+Q=input("Would you like to specify a date? (Y/N): " )
+
+if Q=="Y":
+    userDate=input("input date for prediction as YYYY-MM-DD:")
+    userDateTime=pd.to_datetime(userDate)
+    timeElapsedUser=(userDateTime-startDate)
+    daysPassedUser=timeElapsedUser.days
+    predictedUserInput=FitAll(daysPassedUser,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
+    print()
+    print("The predicted CO2 for the date of "+ str(userDate)+" is "+str(round(predictedUserInput,2))+"ppmv")
         
 
       
