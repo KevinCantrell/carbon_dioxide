@@ -33,7 +33,7 @@ timeElapsed=dfCarbonDioxide['date']-startDate
 daysSinceStart=timeElapsed.dt.days
 
 fitCoeffs=np.polyfit(daysSinceStart,dfCarbonDioxide['value'],2)
-popt,pcov=curve_fit(fitAll,daysSinceStart,dfCarbonDioxide['value'])
+popt,pcov=curve_fit(fitAll,daysSinceStart,dfCarbonDioxide['value'],p0=[fitCoeffs[0],fitCoeffs[1],fitCoeffs[2],8,365.25,200])
 
 #fitCO2=fitAll(daysSinceStart,fitCoeffs[0],fitCoeffs[1],fitCoeffs[2],8,365.25,200)
 fitCO2=fitAll(daysSinceStart,popt[0],popt[1],popt[2],popt[3],popt[4],popt[5])
