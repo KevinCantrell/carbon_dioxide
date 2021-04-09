@@ -15,8 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from pandas.plotting import register_matplotlib_converters
 from scipy.optimize import curve_fit
-
-
+import ftplib as ftp
 
 register_matplotlib_converters()
 
@@ -85,7 +84,17 @@ def AnnotateNLFit(fit,axisHandle,annotationText='Box',color='black',Arrow=False,
   annotationObject.draggable()
   return annotationObject
 
+#Automated
+#import requests
+
+#url = 'https://www.esrl.noaa.gov/gmd/aftp/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt'
+#r = requests.get(url, allow_redirects=True)
+#open('CO2.txt', 'wb').write(r.content)
+
+#dfImported=pd.read_table('CO2.txt',delimiter=r"\s+",skiprows=151)
+
 #reading table
+
 dfCarbonDioxide=pd.read_table('co2_mlo.txt',delimiter=r"\s+",skiprows=151)
 
 
@@ -133,7 +142,7 @@ fitCO2=FitPly(daysSinceStart,fitCoeffs[2],fitCoeffs[1],fitCoeffs[0])
 #resiual plotting
 fig,axResidual=plt.subplots()
 residuals=dfCarbonDioxide['value']-fitCO2
-axResidual.plot(daysSinceStart,residuals,'-b')
+#axResidual.plot(daysSinceStart,residuals,'-b')
 #calculating standard error
 sy=np.sqrt(np.sum(residuals**2)/(len(residuals)-3))
 
@@ -185,11 +194,11 @@ TestDateTime=pd.to_datetime(TestDate)
 timeElapsedTest=(TestDateTime-startDate)
 daysPassedTest=timeElapsedTest.days
 TestInput=FitAll(daysPassedTest,sciPyCoeffs[0],sciPyCoeffs[1],sciPyCoeffs[2],sciPyCoeffs[3],sciPyCoeffs[4],sciPyCoeffs[5])
-TextTest="predicted CO2 for the date of "+ str(TestDate)+" is "+str(round(TestInput,2))+"ppmv"
+TextTest="Predicted values are seen in blue \n""predicted CO2 for the date of "+ str(TestDate)+" is "+str(round(TestInput,2))+"ppmv"
 
 AnnotateNLFit(fitFitAll,ax,annotationText=TextTest,Arrow=True,xArrow=TestDateTime,yArrow=TestInput,xText=0.1,yText=0.9)
 #peronal input for specific dates
-Q=input("Would you like to specify a date? (Y/N): " )
+Q=input("Would you like to specify a date for prediction? (Y/N): " )
 
 if Q=="Y":
     userDate=input("input date for prediction as YYYY-MM-DD:")
