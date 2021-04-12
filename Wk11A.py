@@ -55,39 +55,7 @@ def AnnotateNLFit(fit,axisHandle,annotationText='Box',color='black',Arrow=False,
   annotationObject.draggable()
   return annotationObject
 
-
 def FormatSciUsingError(x,e,WithError=False,ExtraDigit=0):
-  """
-  Format the value, x, as a string using scientific notation and rounding appropriately based on the absolute error, e
-  
-  Parameters
-  ----------
-      x: number
-          the value to be formatted 
-      e: number
-          the absolute error of the value
-      withError: bool, optional
-          When False (the default) returns a string with only the value. When True returns a string containing the value and the error
-      extraDigit: int, optional
-          number of extra digits to return in both value and error
-  
-  Returns
-  -------
-  a string
-  
-  Examples
-  --------
-  >>> FormatSciUsingError(3.141592653589793,0.02718281828459045)
-  '3.14E+00'
-  >>> FormatSciUsingError(3.141592653589793,0.002718281828459045)
-  '3.142E+00'
-  >>> FormatSciUsingError(3.141592653589793,0.002718281828459045,withError=True)
-  '3.142E+00 (+/- 3E-03)'
-  >>> FormatSciUsingError(3.141592653589793,0.002718281828459045,withError=True,extraDigit=1)
-  '3.1416E+00 (+/- 2.7E-03)'
-  >>> FormatSciUsingError(123456,123,withError=True)
-  '1.235E+05 (+/- 1E+02)'
-  """
   if abs(x)>=e:
       NonZeroErrorX=np.floor(np.log10(abs(e)))
       NonZeroX=np.floor(np.log10(abs(x)))
@@ -150,9 +118,10 @@ datesFuture=startDate+pd.to_timedelta(daysFuture,unit='d')
 futureCO2=fitAll(daysFuture,poptAll[0],poptAll[1],poptAll[2],poptAll[3],poptAll[4],poptAll[5])
 ax.plot(datesFuture,futureCO2,'-r')
 
+
 fit={'coefs':poptAll,'errors':errors,'sy':stdErr,'n':len(dfCarbonDioxide['value']),'res':res,'labels':['exp','linear','initial','amplitude','period','offset','day = days since '+startDate.strftime('%b-%d-%Y')+'\n']}
 AnnotateNLFit(fit,ax,color='xkcd:dark purple',annotationText=r'Predicted CO2 on April-08-2021 is = '+FormatSciUsingError(predictedCO2,0.1,ExtraDigit=1),Arrow=True,xArrow=dateToPredict, yArrow=predictedCO2, xText=0.3,yText=0.1)
-
-
+annBox=AnnotateNLFit(fit,ax,annotationText='Box',color='black',Arrow=False,xText=0.42,yText=0.14)
+#annPrediction=AnnotateNLFit(fit,ax,color='green',annotationText=r'Predicted CO$_2$ on '+dateToPredict.strftime('%b-%d-%Y')+" is "+FormatSciUsingError(predictedCO2,stdErr,ExtraDigit=1,WithError=True)+r" ppm",Arrow=True,xArrow=dateToPredict,yArrow=predictedCO2,xText=0.35,yText=0.95)
 
 
