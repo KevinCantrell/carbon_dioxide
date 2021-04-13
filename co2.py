@@ -35,9 +35,18 @@ daysSinceStart=timeElapsed.dt.days
 fitCoeffs=np.polyfit(daysSinceStart,dfCarbonDioxide['value'],2)
 popt,pcov=curve_fit(fitAll,daysSinceStart,dfCarbonDioxide['value'],p0=[fitCoeffs[0],fitCoeffs[1],fitCoeffs[2],8,365.25,200])
 
-#fitCO2=fitAll(daysSinceStart,fitCoeffs[0],fitCoeffs[1],fitCoeffs[2],8,365.25,200)
+dateToPredict=pd.to_datetime('2021-04-08 00:00:00')
+dayToPredict=dateToPredict-startDate
+daysSinceStartPrediction=dayToPredict.days
+futureArray=np.arange(0,18000,1)
+futureDate=pd.to_timedelta(futureArray,unit='d')+startDate
+fitCO2Today=fitAll(daysSinceStartPrediction,popt[0],popt[1],popt[2],popt[3],popt[4],popt[5])
 fitCO2=fitAll(daysSinceStart,popt[0],popt[1],popt[2],popt[3],popt[4],popt[5])
-ax.plot(dfCarbonDioxide['date'],fitCO2,'-r')
+fitCO2Future=fitAll(futureArray,popt[0],popt[1],popt[2],popt[3],popt[4],popt[5])
+ax.plot(dateToPredict,fitCO2Today,'og')
+ax.plot(dfCarbonDioxide['date'],fitCO2,'-g')
+ax.plot(futureDate,fitCO2Future,'-r')
+
 
 fig1,ax1=plt.subplots(figsize=(12,8))
 residual=fitCO2-dfCarbonDioxide['value']
