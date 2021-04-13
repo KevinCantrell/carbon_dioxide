@@ -85,17 +85,17 @@ def AnnotateNLFit(fit,axisHandle,annotationText='Box',color='black',Arrow=False,
   return annotationObject
 
 #Automated
-#import requests
+import requests
 
-#url = 'https://www.esrl.noaa.gov/gmd/aftp/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt'
-#r = requests.get(url, allow_redirects=True)
-#open('CO2.txt', 'wb').write(r.content)
+url = 'https://www.esrl.noaa.gov/gmd/aftp/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt'
+r = requests.get(url, allow_redirects=True)
+open('CO2.txt', 'wb').write(r.content)
 
-#dfImported=pd.read_table('CO2.txt',delimiter=r"\s+",skiprows=151)
+dfCarbonDioxide=pd.read_table('CO2.txt',delimiter=r"\s+",skiprows=151)
 
 #reading table
 
-dfCarbonDioxide=pd.read_table('co2_mlo.txt',delimiter=r"\s+",skiprows=151)
+#dfCarbonDioxide=pd.read_table('co2_mlo.txt',delimiter=r"\s+",skiprows=151)
 
 
 #removing missing data
