@@ -49,6 +49,7 @@ futureDate=pd.to_timedelta(futureArray,unit='d')+startDate
 fitCoeffs=np.polyfit(daysSinceStart,dfCarbonDioxide['value'],2)
 #popt,pcov=curve_fit(fitAll,daysSinceStart,dfCarbonDioxide['value'],p0=[fitCoeffs[0],fitCoeffs[1],fitCoeffs[2],8,365.25,200])
 popt,pcov=curve_fit(fitAll,daysSinceStart,dfCarbonDioxide['value'],p0=[fitCoeffs[0],fitCoeffs[1],fitCoeffs[2],8,365.25,200])
+errorsOpt=np.sqrt(np.diagonal(pcov))
 #fitCO2=fitAll(daysSinceStart,fitCoeffs[0],fitCoeffs[1],fitCoeffs[2],8,365.25,200)
 #fitCO2ply=fitAll(daysSinceStart,popt[0],popt[1],popt[2],popt[3],popt[4],popt[5])
 fitCO2ply=fitAll(daysSinceStart,popt[0],popt[1],popt[2],popt[3],popt[4],popt[5])
@@ -69,7 +70,9 @@ axRes.plot(daysSinceStart,residuals,'-b')
 oscillationCalc=fitOsc(daysSinceStart,8,365.25,200)
 #axRes.plot(daysSinceStart,oscillationCalc,'y')
         
-stdError=np.sqrt(np.sum(residuals**2)/(len(residuals)-len(fitCoeffs)))
+stdErrorFit=np.sqrt(np.sum(residuals**2)/(len(residuals)-len(fitCoeffs)))
+
+
 
 def FormatSciUsingError(x,e,WithError=False,ExtraDigit=0):
   if abs(x)>=e:
@@ -122,4 +125,9 @@ def AnnotateNLFit(fit,axisHandle,annotationText='Box',color='black',Arrow=False,
               )
   annotationObject.draggable()
   return annotationObject
-AnnotateNLFit(fitCO2Future,ax)
+
+fit={'coefs':popt,'errors':errorsOpt,'sy':stdErrorFit,'n':len(fitCO2ply),'res':residuals,'labels':['exp','linear','initial','amplitude','period','offset','day = days since '+startDate.strftime('%b-%d-%Y')+'\n']}
+annBox=AnnotateNLFit(fit,ax,annotationText='Box',color='black',Arrow=False,xText=0.42,yText=0.14)
+annPrediction=AnnotateNLFit(fit,ax,color='green',annotationText=r'Predicted CO$_2$ on '+dateToPredict.strftime('%b-%d-%Y')+" is "+FormatSciUsingError(fitCO2OneYear,stdErrorFit,ExtraDigit=1,WithError=True)+r" ppm",Arrow=True,xArrow=dateToPredict,yArrow=fitCO2OneYear,xText=0.35,yText=0.95)
+
+
