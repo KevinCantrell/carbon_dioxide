@@ -93,8 +93,8 @@ def AnnotateNLFit(fit,axisHandle,annotationText='Box',color='black',Arrow=False,
   e=fit['errors']
   t=len(c)
   if annotationText=='Box':
-      oscText=r'$\frac{'+fit['labels'][0]+r'}{2}\cdot \cos{(\frac{(day + '+fit['labels'][2]+') \cdot 2 \pi}{'+fit['labels'][1]+'})}$'
-      plyText=fit['labels'][3]+' + '+fit['labels'][4]+'$\cdot$day + '+fit['labels'][5]+'$\cdot$day$^2$'
+      oscText=r'$\frac{'+fit['labels'][3]+r'}{2}\cdot \cos{(\frac{(day + '+fit['labels'][5]+') \cdot 2 \pi}{'+fit['labels'][4]+'})}$'
+      plyText=fit['labels'][2]+' + '+fit['labels'][1]+'$\cdot$day + '+fit['labels'][0]+'$\cdot$day$^2$'
       annotationText='fit function = '+plyText+' + '+oscText+'\n'
       for order in range(t):
           annotationText=annotationText+fit['labels'][order]+" = "+FormatSciUsingError(c[order],e[order],ExtraDigit=1)+' $\pm$ '+"{0:.1E}".format(e[order])+'\n'
