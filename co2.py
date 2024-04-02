@@ -9,6 +9,14 @@ def CalcCO2Poly(days,c2,c1,c0):
     co2calc=c2*days**2+c1*days+c0
     return co2calc
 
+def cosCalcCO2(days,amp,off,frq):
+    sinu=amp/2 * np.cos((days + off)  * 2 * np.pi/frq)
+    return sinu
+
+def CalcCO2Full(days, c2,c1,c0,amp,off,frq):
+    co2calc=CalcCO2Poly(days,c2,c1,c0)+cosCalcCO2(days,amp,off,frq)
+    return co2calc
+    
 dfCarbonDioxide=pd.read_table('co2_mlo_surface-insitu_1_ccgg_DailyData.txt',delimiter=r"\s+",skiprows=158)
 dfCarbonDioxide['date']=pd.to_datetime(dfCarbonDioxide[['year', 'month', 'day', 'hour', 'minute', 'second']])
 #converts time data into one parameter pandas datetime
@@ -31,6 +39,7 @@ daysSinceStart=timeElapsed.dt.days
 #gives number of days since start, x values
 
 fitpoly=np.polyfit(daysSinceStart,dfCarbonDioxide['value'], 2)
+#second order fit
 
 co2fitPoly=CalcCO2Poly(daysSinceStart,fitpoly[0],fitpoly[1],fitpoly[2])
 
@@ -39,5 +48,35 @@ co2fitPoly=CalcCO2Poly(daysSinceStart,fitpoly[0],fitpoly[1],fitpoly[2])
 fig, ax = plt.subplots(figsize=(12,8))
 ax.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value'],'.k')
 ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-ax.plot(dfCarbonDioxide['date'], co2fitPoly, '-r')
 #uses a date format for x axis
+
+y=dfCarbonDioxide['value']
+yfit=co2fitPoly
+res=y-yfit
+n=len(daysSinceStart)
+df=n-(len(fitpoly))
+sy=np.sqrt( np.sum(res**2) / df )
+
+sinuCO2fit=cosCalcCO2(daysSinceStart,9,0,365)
+#frq is one year, 140 x of first peak
+
+
+# figRes, axRes = plt.subplots(figsize=(12,8))
+# axRes.plot(daysSinceStart,res,'.k')
+# axRes.plot(daysSinceStart, sinuCO2fit,'-r')
+
+co2fitfull=CalcCO2Full(daysSinceStart,fitpoly[0],fitpoly[1],fitpoly[2],9,0,365)
+ax.plot(dfCarbonDioxide['date'], co2fitfull,'-g')
+
+popt,pcov=curve_fit(CalcCO2Full, daysSinceStart, dfCarbonDioxide['value'],p0=[fitpoly[0],fitpoly[1],fitpoly[2],9,0,365])
+curverrors=(np.sqrt(np.diag(pcov)))
+c2opt=popt[0]
+c1opt=popt[1]
+c0opt=popt[2]
+ampopt=popt[3]
+offopt=popt[4]
+frqopt=popt[5]
+
+CO2curveOpt=CalcCO2Full(daysSinceStart,c2opt,c1opt,c0opt,ampopt,offopt,frqopt)
+ax.plot(dfCarbonDioxide['date'],CO2curveOpt, '-r')
+ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
