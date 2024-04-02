@@ -16,9 +16,7 @@ fig, ax = plt.subplots(figsize=(12,8))
 ax.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value'],'.k')
 ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
 
-#peak in april and may and min at october
-#monoloa
 
-startDate=min(dfCarbonDioxide['date'])
-timeElapsed=dfCarbonDioxide['date']-startDate
-daysSinceStart=timeElapsed.dt.days
+
+
+
