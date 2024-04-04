@@ -52,3 +52,14 @@ ax.plot(dfCarbonDioxide['date'],co2fitFull,'-g')
 CO2P,CO2C=curve_fit(CalcCO2Full,daysSinceStart,dfCarbonDioxide['value'],p0=[fitPoly[0],fitPoly[1],fitPoly[2],9,0,365])
 CO2calc=CalcCO2Full(daysSinceStart, CO2P[0], CO2P[1], CO2P[2], CO2P[3],CO2P[4], CO2P[5])
 ax.plot(dfCarbonDioxide['date'],CO2calc,'-m')
+
+
+dateToPredict=pd.to_datetime('2024-03-29 00:00:00')
+dayToPredict=dateToPredict-startDate
+daysSinceStartPrediction=dayToPredict.days
+CO2calcPrediction=CalcCO2Full(daysSinceStartPrediction, CO2P[0], CO2P[1], CO2P[2], CO2P[3],CO2P[4], CO2P[5])
+
+daysFuture=np.linspace(0,int(daysSinceStartPrediction+(365.25*3)),int(daysSinceStartPrediction+(365.25*3)+1))
+datesFuture=startDate+pd.to_timedelta(daysFuture,unit='d')
+CO2calcFuture=CalcCO2Full(daysFuture, CO2P[0], CO2P[1], CO2P[2], CO2P[3],CO2P[4], CO2P[5])
+ax.plot(datesFuture,CO2calcFuture,'-c')
