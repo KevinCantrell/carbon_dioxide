@@ -55,7 +55,7 @@ yfit=co2fitPoly
 res=y-yfit
 n=len(daysSinceStart)
 df=n-(len(fitpoly))
-sy=np.sqrt( np.sum(res**2) / df )
+sy=np.sqrt(np.sum(res**2) / df )
 
 sinuCO2fit=cosCalcCO2(daysSinceStart,9,0,365)
 #frq is one year, 140 x of first peak
@@ -66,7 +66,7 @@ sinuCO2fit=cosCalcCO2(daysSinceStart,9,0,365)
 # axRes.plot(daysSinceStart, sinuCO2fit,'-r')
 
 co2fitfull=CalcCO2Full(daysSinceStart,fitpoly[0],fitpoly[1],fitpoly[2],9,0,365)
-ax.plot(dfCarbonDioxide['date'], co2fitfull,'-g')
+# ax.plot(dfCarbonDioxide['date'], co2fitfull,'-g')
 
 popt,pcov=curve_fit(CalcCO2Full, daysSinceStart, dfCarbonDioxide['value'],p0=[fitpoly[0],fitpoly[1],fitpoly[2],9,0,365])
 curverrors=(np.sqrt(np.diag(pcov)))
@@ -77,6 +77,26 @@ ampopt=popt[3]
 offopt=popt[4]
 frqopt=popt[5]
 
+dateToPredict=pd.to_datetime('2024-03-29 00:00:00')
+dateGrad=pd.to_datetime('2024-05-05 00:00:00')
+dayToPredict=dateToPredict-startDate
+dayToGrad=dateGrad-startDate
+daysSinceStartPrediction=dayToPredict.days
+daysSinceStartGrad=dayToGrad.days
+yearToPredict=dateToPredict.year+dateToPredict.day_of_year/(365+dateToPredict.is_leap_year)
+daysFuture=np.linspace(0,int(np.ceil(365.25*52)),int(np.ceil(365.25*52)+1))
+datesFuture=startDate+pd.to_timedelta(daysFuture, unit='d')
+yearToGrad=dateGrad.year+dateGrad.day_of_year/(365+dateGrad.is_leap_year)
+datesGrad=startDate+pd.to_timedelta(dayToGrad, unit='d')
+
 CO2curveOpt=CalcCO2Full(daysSinceStart,c2opt,c1opt,c0opt,ampopt,offopt,frqopt)
-ax.plot(dfCarbonDioxide['date'],CO2curveOpt, '-r')
+CO2curvePredict=CalcCO2Full(daysSinceStartPrediction,c2opt,c1opt,c0opt,ampopt,offopt,frqopt)
+CO2curveFuture=CalcCO2Full(daysFuture,c2opt,c1opt,c0opt,ampopt,offopt,frqopt)
+CO2Grad=CalcCO2Full(daysSinceStartGrad,c2opt,c1opt,c0opt,ampopt,offopt,frqopt)
+# ax.plot(dfCarbonDioxide['date'],CO2curveOpt, '-r')
+ax.plot(datesFuture,CO2curveFuture,color='#54e441')
 ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+ax.set_ylabel('$CO_2$ (ppm)')
+ax.set_xlabel('Date')
+# ax.text('Predicted $CO_2$ on''is''ppm')
+ax.annotate('Predicted $CO_2$ on'+'is'+'ppm',xy=(datesGrad, CO2Grad),xycoords='data',xytext=(0.5, 0.8),  textcoords='axes fraction',arrowprops={'color':'black', 'width':1, 'headwidth':5},bbox={'boxstyle':'round', 'edgecolor':'#FD6C9E','facecolor':'0.8'})
