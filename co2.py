@@ -129,14 +129,19 @@ datesFuture=startDate+pd.to_timedelta(daysFuture,unit='d')
 CO2calcFuture=CalcCO2Full(daysFuture, CO2P[0], CO2P[1], CO2P[2], CO2P[3],CO2P[4], CO2P[5])
 ax.plot(datesFuture,CO2calcFuture,'-c')
 
-annotationText=str(CO2calcPrediction)
+predictCO2error=np.sqrt(np.sum((dfCarbonDioxide['value']-CO2calc)**2)/(len(daysSinceStart)-6))
+
+strpredictCO2error=FormatSciUsingError(predictCO2error,0.01)
+strpredictCO2=FormatSciUsingError(CO2calcPrediction,predictCO2error)
+
+annotationText='Predicted '+r'$\mathregular{CO_2}$ on March 29, 2024 is '+strpredictCO2+ ' ($\pm$ '+strpredictCO2error+') ppm $\pm$'
 xArrow=dateToPredict
 yArrow=CO2calcPrediction
 
 
 annotationObject=ax.annotate(annotationText, 
         xy=(xArrow, yArrow), xycoords='data',
-        xytext=(.5, .8), textcoords='axes fraction',
+        xytext=(.3, .9), textcoords='axes fraction',
         arrowprops={'color': 'y', 'width':1, 'headwidth':5},
         bbox={'boxstyle':'round', 'edgecolor':'b','facecolor':'0.8'}
         )
