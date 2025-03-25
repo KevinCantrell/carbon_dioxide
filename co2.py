@@ -5,7 +5,7 @@ import matplotlib.dates as mdates
 from scipy.optimize import curve_fit
 from scipy import stats
  
-dfCarbonDioxide=pd.read_table('co2_mlo_surface-insitu_1_ccgg_DailyData.txt',delimiter=r"\s+",skiprows=150)
+dfCarbonDioxide=pd.read_table('co2_mlo_surface-insitu_1_ccgg_DailyData.txt',delimiter=r"\s+",skiprows=158)
 dfCarbonDioxide['date']=pd.to_datetime(dfCarbonDioxide[['year', 'month', 'day', 'hour', 'minute', 'second']])
 boolMissing=dfCarbonDioxide['value']==-999.99
 dfCarbonDioxide[boolMissing]=np.nan
