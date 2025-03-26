@@ -6,7 +6,7 @@ from scipy.optimize import curve_fit
 from scipy import stats
  
 def funcCO2(days,c2,c1,c0):
-    co2=c2**2+c1+c0
+    co2=c2*days**2+c1*days+c0
     return co2
 
 dfCarbonDioxide=pd.read_table('co2_mlo_surface-insitu_1_ccgg_DailyData.txt',delimiter=r"\s+",skiprows=158) #reading the connected data from NOAA
@@ -20,15 +20,19 @@ fig, ax = plt.subplots(figsize=(12,8))
 ax.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value'],'.k')
 ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
 
-#startDate=min(dfCarbonDioxide['date'])
-#timeElapsed=dfCarbonDioxide['date']-startDate
-#daysSinceStart=timeElapsed.dt.days
+startDate=min(dfCarbonDioxide['date'])
+timeElapsed=dfCarbonDioxide['date']-startDate
+daysSinceStart=timeElapsed.dt.days
 
-#curve_fit(funcCO2,)
-#popt,pcov=curve_fit(funcCO2,)
+popt,pcov=curve_fit(funcCO2,daysSinceStart,dfCarbonDioxide['value'])
+#going up about 0.003 ppm/day
 
+fitCO2=funcCO2(daysSinceStart,popt[0],popt[1],popt[2])
+ax.plot(dfCarbonDioxide['date'],fitCO2,'-r')
 
-
+#add lines to the function that adds a sine or cosine wave to implement oscillations
+#need a periodic function (high in may, low in october)
+#build in information about seasonal variation
 
 
 
