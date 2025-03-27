@@ -41,4 +41,4 @@ ax.plot(dfCD['date'], CD_calc, '-r')
 
 #ax.plot(dfCD['date'], CD_Cfit, '-g')
 
-#difference between red line and black points
+#difference between red line and black points - next week
