@@ -97,16 +97,16 @@ fit1=PolyReg(daysSinceStart,dfCarbonDioxide['value'],order=2)
 C2=fit1['coefs'][0]
 C1=fit1['coefs'][1]
 C0=fit1['coefs'][2]
-popt,pcov=curve_fit(CO2Func,daysSinceStart,dfCarbonDioxide['value'],p0=[C2,C1,C0,10,200,365])
+popt,pcov=curve_fit(CO2Func,daysSinceStart,dfCarbonDioxide['value'],p0=[C0,C1,C2,10,200,365])
 dayFuture=np.linspace(0,int(np.ceil(365.25*55)),int(np.ceil(365.25*55)+1))
 dateFuture=startDate+pd.to_timedelta(dayFuture,unit='d')
 
-#futureConc=CO2Conc(finalDayPredic, *popt)
-#allFutureConc=CO2Conc(daysSinceStart,*popt)
-#res=allFutureConc-dfCarbonDioxide['value']
-#df=len(dfCarbonDioxide['date'])-len(popt)
-#sy=np.sum(np.sqrt((np.sum(res**2))/df))
-#concPre=FormatSciUsingError(futureConc,sy,WithError=True)
+futureConc=CO2Conc(finalDayPredic, *popt)
+allFutureConc=CO2Conc(daysSinceStart,*popt)
+res=allFutureConc-dfCarbonDioxide['value']
+df=len(dfCarbonDioxide['date'])-len(popt)
+sy=np.sum(np.sqrt((np.sum(res**2))/df))
+concPre=FormatSciUsingError(futureConc,sy,WithError=True)
 
 
 
@@ -115,5 +115,5 @@ ax.plot(dfCarbonDioxide['date'],dfCarbonDioxide['value'],'.k') #plotting the kno
 ax.format_xdata=mdates.DateFormatter('%Y-%m-%d') #formating the dates to be consitent
 ax.plot(dateFuture,CO2Func(dayFuture,*popt),'r')
 ax.set_ylabel('$CO_2$ Concentration (ppm)')
-ax.set_xlabel('Date')
+ax.set_xlabel('Date (YYYY-MM-dd)')
 #predictBox=AnnotateNLFit(popt,ax,annotationText='Predicted $CO_2$ on May-04-2025 is '+str(concPre)+'ppm',Arrow=True,xText=.95,yText=.35,xArrow=finalDate,yArrow=futureConc)
