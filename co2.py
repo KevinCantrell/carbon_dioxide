@@ -31,3 +31,8 @@ co2fit = dfCarbonDioxide['value']- co2
 
 fig2, az = plt.subplots()
 az.plot(dfCarbonDioxide['date'], co2fit)
+
+amp = 12
+period = 365
+'''y = 12*np.cos(dfCarbonDioxide['date']/period)'''
+
