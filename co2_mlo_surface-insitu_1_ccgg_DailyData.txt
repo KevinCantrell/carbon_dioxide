@@ -13,7 +13,7 @@
 # ------------------------------------------------------------->>>>
 # CITATION
 #
-# dataset_citation: K.W. Thoning, A.M. Crotwell, and J.W. Mund (2025), Atmospheric Carbon Dioxide Dry Air Mole Fractions from  continuous measurements at Mauna Loa, Hawaii, Barrow, Alaska, American Samoa and South Pole, 1973-present. Version 2025-03-15, National Oceanic and Atmospheric Administration (NOAA), Global Monitoring Laboratory (GML), Boulder, Colorado, USA https://doi.org/10.15138/yaf1-bk21
+# dataset_citation: K.W. Thoning, A.M. Crotwell, and J.W. Mund (2025), Atmospheric Carbon Dioxide Dry Air Mole Fractions from  continuous measurements at Mauna Loa, Hawaii, Barrow, Alaska, American Samoa and South Pole, 1973-present. Version 2025-04-26, National Oceanic and Atmospheric Administration (NOAA), Global Monitoring Laboratory (GML), Boulder, Colorado, USA https://doi.org/10.15138/yaf1-bk21
 #
 # ------------------------------------------------------------->>>>
 # FAIR USE POLICY
@@ -40,7 +40,7 @@
 # site_utc2lst : -10.0
 # site_utc2lst_comment : Add 'site_utc2lst' hours to convert a time stamp in UTC (Coordinated Universal Time) to LST (Local Standard Time).
 # site_url : https://gml.noaa.gov/obop/mlo/
-# dataset_creation_date : 2025-03-15T02:36:32.020993
+# dataset_creation_date : 2025-04-26T11:02:56.912692
 # dataset_num : 8
 # dataset_name : co2_mlo_surface-insitu_1_ccgg_DailyData
 # dataset_parameter : co2
